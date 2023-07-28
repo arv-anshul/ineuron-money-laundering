@@ -1,0 +1,16 @@
+{
+  "numberOfColumns": 7,
+  "targetColumn": "isfraud",
+  "columnNames": [
+    "sourceid",
+    "destinationid",
+    "amountofmoney",
+    "date",
+    "typeofaction",
+    "typeoffraud",
+    "isfraud"
+  ],
+  "numColumnsNames": ["sourceid", "destinationid", "amountofmoney"],
+  "catColumnsNames": ["typeofaction", "typeoffraud"],
+  "dateColumnsNames": ["date"]
+}
