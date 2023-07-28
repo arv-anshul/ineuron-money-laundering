@@ -16,7 +16,8 @@ __rough__/
 
 # Custom project files and folders
 logs/
-data/
+project.config
+.streamlit/secrets.toml
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
