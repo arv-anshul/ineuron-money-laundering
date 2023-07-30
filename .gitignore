@@ -18,6 +18,7 @@ __rough__/
 logs/
 project.config
 .streamlit/secrets.toml
+artifacts
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

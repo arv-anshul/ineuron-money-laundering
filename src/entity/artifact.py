@@ -3,10 +3,13 @@
 from dataclasses import dataclass
 from pathlib import Path
 
+from src.database import DataSchema
+
 
 @dataclass
 class DataIngestionArtifact:
     base_data_path: Path
+    data_schema: DataSchema
     train_path: Path
     test_path: Path
 
@@ -14,7 +17,7 @@ class DataIngestionArtifact:
 # Maybe DataValidationArtifact is not required because it doesn't do with anything.
 @dataclass
 class DataValidationArtifact(DataIngestionArtifact):
-    report_fp: Path
+    report_path: Path
 
 
 @dataclass

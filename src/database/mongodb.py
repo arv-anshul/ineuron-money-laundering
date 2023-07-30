@@ -3,7 +3,6 @@ from enum import Enum
 from os import getenv
 
 import pandas as pd
-import streamlit as st
 from dotenv import load_dotenv
 from pymongo import MongoClient
 from pymongo.collection import Collection
@@ -23,10 +22,14 @@ def get_mongodb_url() -> str:
     mongodb_url = getenv('MONGODB_URL')
     try:
         if mongodb_url is None:
+            import streamlit as st
             mongodb_url = st.secrets['MONGODB_URL']
-    except Exception as e:
+            logger.info('Getting MONGODB_URL from streamlit secrets.')
+        else:
+            logger.info('Getting MONGODB_URL from .env file.')
+    except Exception:
         logger.error(
-            'No env_var is available as `MONGODB_URL` in ".env" or '
+            'No env_var is available as MONGODB_URL in ".env" or '
             '".streamlit/secrets.toml" file.'
         )
         raise

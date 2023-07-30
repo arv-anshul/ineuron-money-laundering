@@ -22,9 +22,9 @@ class DataIngestionConfig(PipelineConfig):
         super().__init__()
         self.base_data_path = self.root / 'data' / BASE_DATA_NAME
         self.dir = self.artifact_dir / 'data_ingestion'
-        self.train_path = self.dir / 'train.parquet'
-        self.test_path = self.dir / 'test.parquet'
-        self.test_size = None   # According to project
+        self.train_path = self.dir / 'train.csv'
+        self.test_path = self.dir / 'test.csv'
+        self.test_size = 0.2
         self.__create_all_dirs()
 
     def __create_all_dirs(self):
@@ -37,7 +37,7 @@ class DataValidationConfig(DataIngestionConfig):
         self.dir = self.artifact_dir / 'data_validation'
         self.reports_dir = self.root / 'reports'
         self.drift_report_path = self.reports_dir / 'drift_report.yaml'
-        self.missing_threshold = None   # According to project
+        self.missing_threshold = 0.6
         self.__create_all_dirs()
 
     def __create_all_dirs(self):
