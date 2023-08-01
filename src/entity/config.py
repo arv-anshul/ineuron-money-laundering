@@ -49,7 +49,7 @@ class DataTransformationConfig(DataIngestionConfig):
     def __init__(self):
         super().__init__()
         self.dir = self.artifact_dir / 'data_transformation'
-        self.transformer_pkl_path = self.dir / 'transformer.pkl'
+        self.transformer_path = self.dir / 'transformer.pkl'
         self.target_enc_path = self.dir / 'target_encoder.pkl'
         self.train_arr_path = self.dir / 'transformed_arrays/train.npy'
         self.test_arr_path = self.dir / 'transformed_arrays/test.npy'
@@ -65,9 +65,9 @@ class ModelTrainerConfig(PipelineConfig):
         super().__init__()
         self.dir = self.artifact_dir / 'model_trainer'
         self.model_path = self.dir / 'model.pkl'
-        self.expected_training_score = None   # According to project
-        self.expected_testing_score = None   # According to project
-        self.overfitting_threshold = None   # According to project
+        self.expected_training_score = 0.9   # According to project
+        self.expected_testing_score = 0.88   # According to project
+        self.overfitting_threshold = 0.5   # According to project
         self.__create_all_dirs()
 
     def __create_all_dirs(self):
@@ -76,7 +76,7 @@ class ModelTrainerConfig(PipelineConfig):
 
 @dataclass
 class ModelEvaluationConfig:
-    model_score_diff_threshold = None   # According to project
+    model_score_diff_threshold = 0.05   # According to project
 
 
 class ModelPusherConfig(PipelineConfig):

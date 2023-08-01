@@ -52,7 +52,7 @@ def dump_data_to_mongodb(df: pd.DataFrame) -> None:
         mongodb_url, MongoDB.database_name, MongoDB.collection_name,
     )
 
-    data_as_list: list[dict] = list(json.loads(df.T.to_json()).values)
+    data_as_list: list[dict] = list(json.loads(df.T.to_json()).values())
     coll.insert_many(data_as_list)
     logger.info('Dumped %s data into MONGODB.', len(data_as_list))
 
@@ -72,9 +72,3 @@ def from_mongodb_to_dataframe() -> pd.DataFrame:
     df = pd.DataFrame(base_data)
     logger.info('Loaded %s shaped DataFrame from MONGODB.', df.shape)
     return df
-
-
-if __name__ == '__main__':
-    df = pd.read_csv('data/raw_data.csv')
-    print(df.shape)
-    # dump_data_to_mongodb(df)

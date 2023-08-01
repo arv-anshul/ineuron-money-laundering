@@ -8,13 +8,13 @@ from src.core import get_logger
 logger = get_logger(__name__)
 
 
-def dump_model(model: object, fp: Path) -> None:
+def dump_model(model, fp: Path) -> None:
     with open(fp, 'wb') as f:
         dill.dump(model, f)
     logger.info('Model %s dumped.', fp)
 
 
-def load_model(fp: Path) -> object:
+def load_model(fp: Path):
     with open(fp, 'rb') as f:
         logger.info('Model %s loaded.', fp)
         return dill.load(f)
@@ -27,4 +27,4 @@ def dump_array(array: np.ndarray, fp: Path) -> None:
 
 def load_array(fp: Path) -> np.ndarray:
     logger.info('Array %s loaded.', fp)
-    return np.load(fp)
+    return np.load(fp, allow_pickle=True)

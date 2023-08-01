@@ -61,10 +61,7 @@ class DataIngestion(DataIngestionConfig):
             df = from_mongodb_to_dataframe()
         except Exception:
             logger.error('Error while importing data from database.')
-            logger.info(
-                'Reading "ingestion_data_path" because '
-                'you have not provided "MONGODB_URL".'
-            )
+            logger.info('Reading "ingestion_data_path" parameter.')
             if ingestion_data_path is None:
                 logger.error(
                     'Please provide either "ingestion_data_path" or '

@@ -1,0 +1,57 @@
+{
+  "missing_values_within_base_df": [],
+  "missing_values_within_train_df": [],
+  "missing_values_within_test_df": [],
+  "data_drift_within_train_df": {
+    "sourceid": {
+      "pvalue": 1.0,
+      "same_distribution": true
+    },
+    "destinationid": {
+      "pvalue": 1.0,
+      "same_distribution": true
+    },
+    "amountofmoney": {
+      "pvalue": 1.0,
+      "same_distribution": true
+    },
+    "typeofaction": {
+      "pvalue": 1.0,
+      "same_distribution": true
+    },
+    "typeoffraud": {
+      "pvalue": 1.0,
+      "same_distribution": true
+    },
+    "isfraud": {
+      "pvalue": 1.0,
+      "same_distribution": true
+    }
+  },
+  "data_drift_within_test_df": {
+    "sourceid": {
+      "pvalue": 0.919,
+      "same_distribution": true
+    },
+    "destinationid": {
+      "pvalue": 0.588,
+      "same_distribution": true
+    },
+    "amountofmoney": {
+      "pvalue": 0.91,
+      "same_distribution": true
+    },
+    "typeofaction": {
+      "pvalue": 1.0,
+      "same_distribution": true
+    },
+    "typeoffraud": {
+      "pvalue": 1.0,
+      "same_distribution": true
+    },
+    "isfraud": {
+      "pvalue": 1.0,
+      "same_distribution": true
+    }
+  }
+}
