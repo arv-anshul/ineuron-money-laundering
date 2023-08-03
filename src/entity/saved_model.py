@@ -28,6 +28,16 @@ class SavedModelConfig:
         latest_dir_number = int(self.latest_saved_dir.name) + 1
         return self.dir / str(latest_dir_number)
 
+    def get_saved_models_path(self) -> tuple[Path, Path, Path]:
+        latest = self.latest_saved_dir
+        if latest is None:
+            raise FileNotFoundError('There is no saved models.')
+        return (
+            latest / 'model.pkl',
+            latest / 'transformer.pkl',
+            latest / 'target_encoder.pkl',
+        )
+
     @property
     def path_to_save_model(self):
         return self.new_dir_to_save_models / 'model.pkl'
