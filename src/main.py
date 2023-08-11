@@ -4,6 +4,7 @@ from typing import Any
 import pandas as pd
 
 from src.core.config import Config  # isort:skip
+
 Config.set_run_mode('training')
 
 from src.components import data, model
@@ -14,11 +15,9 @@ from src.entity.saved_model import SavedModelConfig
 def start_model_training(ingestion_data_path: Path | None = None):
     ingestion = data.ingestion.DataIngestion().initiate(ingestion_data_path)
     data.validation.DataValidation(ingestion).initiate()
-    transformation = data.transformation.DataTransformation(
-        ingestion).initiate()
+    transformation = data.transformation.DataTransformation(ingestion).initiate()
     trainer = model.trainer.ModelTrainer().initiate()
-    model.evaluation.ModelEvaluation(
-        ingestion, transformation, trainer).initiate()
+    model.evaluation.ModelEvaluation(ingestion, transformation, trainer).initiate()
 
 
 def get_latest_models():

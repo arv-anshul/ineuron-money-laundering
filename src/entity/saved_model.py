@@ -23,7 +23,7 @@ class SavedModelConfig:
         return self.dir / str(max(dir_names))
 
     def __get_new_dir_path_to_save(self) -> Path:
-        if self.latest_saved_dir == None:
+        if self.latest_saved_dir is None:
             return self.dir / str(0)
         latest_dir_number = int(self.latest_saved_dir.name) + 1
         return self.dir / str(latest_dir_number)

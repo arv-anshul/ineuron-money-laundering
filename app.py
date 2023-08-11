@@ -6,11 +6,9 @@ import streamlit as st
 
 from src.main import predict, start_model_training
 
-st.set_page_config('Prevention System', 'random')
+st.set_page_config('Prevention System', 'random', initial_sidebar_state='collapsed')
 st.markdown(
-    '<h2 style="color: orange;" align=center>'
-    'Money Laundering Prevention System'
-    '</h2>',
+    '<h2 style="color: orange;" align=center>' 'Money Laundering Prevention System' '</h2>',
     True,
 )
 
@@ -24,15 +22,13 @@ class BaseDF:
     typeofaction: str
     typeoffraud: str
 
-    def to_dict(self):
-        return {
-            'sourceid': sourceid,
-            'destinationid': destinationid,
-            'amountofmoney': amountofmoney,
-            'month': month,
-            'typeofaction': typeofaction,
-            'typeoffraud': typeoffraud,
-        }
+    def __iter__(self):
+        yield 'sourceid', self.sourceid
+        yield 'destinationid', self.destinationid
+        yield 'amountofmoney', self.amountofmoney
+        yield 'month', self.month
+        yield 'typeofaction', self.typeofaction
+        yield 'typeoffraud', self.typeoffraud
 
 
 # --- --- --- --- --- --- --- --- --- --- --- --- --- --- #
@@ -45,10 +41,11 @@ base = None
 # Sidebar
 # --- --- --- --- --- --- --- --- --- --- --- --- --- --- #
 with st.sidebar:
-    option = st.selectbox('Prediction Type',
-                          [
-                              'Prediction from Form', #'Batch Prediction'
-                          ])
+    option = st.selectbox(
+        'Prediction Type',
+        ['Prediction from Form', 'Batch Prediction'],
+        disabled=True,
+    )
 
 # --- Train model button --- #
 with st.spinner('Model is training...'):
@@ -63,22 +60,15 @@ with st.spinner('Model is training...'):
 # --- --- --- --- --- --- --- --- --- --- --- --- --- --- #
 if option == 'Prediction from Form':
     with st.form('prediction-from-form'):
-        sourceid = int(st.number_input('Source ID',
-                                       format='%d', value=30105))
-        destinationid = int(st.number_input('Destination ID',
-                                            format='%d', value=8692))
-        amountofmoney = int(st.number_input('Amount of Money',
-                                            format='%d', value=494528))
-        month = int(st.number_input('Month of transaction',
-                                    format='%d', value=5))
-        typeofaction = str(st.selectbox('Type of Action',
-                                        ['cash-in', 'transfer']))
-        typeoffraud = str(st.selectbox('Type of Fraud',
-                                       ['type1', 'type2', 'type3', 'none']))
+        sourceid = int(st.number_input('Source ID', format='%d', value=30105))
+        destinationid = int(st.number_input('Destination ID', format='%d', value=8692))
+        amountofmoney = int(st.number_input('Amount of Money', format='%d', value=494528))
+        month = int(st.number_input('Month of transaction', format='%d', value=5))
+        typeofaction = str(st.selectbox('Type of Action', ['cash-in', 'transfer']))
+        typeoffraud = str(st.selectbox('Type of Fraud', ['type1', 'type2', 'type3', 'none']))
 
         if st.form_submit_button():
-            base = BaseDF(sourceid, destinationid, amountofmoney,
-                          month, typeofaction, typeoffraud)
+            base = BaseDF(sourceid, destinationid, amountofmoney, month, typeofaction, typeoffraud)
 else:
     with st.form('batch-prediction'):
         upload = st.file_uploader(label='Upload CSV file', type='csv')
@@ -92,24 +82,21 @@ else:
 # Process after getting the `base` DataFrame
 # --- --- --- --- --- --- --- --- --- --- --- --- --- --- #
 if base is not None and isinstance(base, BaseDF):
-    df = pd.DataFrame([base.to_dict()])
+    df = pd.DataFrame([dict(base)])
     try:
         _, prediction = predict(df)
     except FileNotFoundError:
-        msg.error('Model is trained yet. Please train model first.',
-                  icon='🔥')
+        msg.error('Model is not trained yet. Please train model first.', icon='🔥')
         st.stop()
     else:
-        result, color = (('Fraud', 'red') if prediction == 1
-                         else ('Not Fraud', 'green'))
+        result, color = ('Fraud', 'red') if prediction == 1 else ('Not Fraud', 'green')
         st.subheader(f':{color}[The entry is {result}.]')
 elif base is not None and isinstance(base, pd.DataFrame):
     df = base
     try:
         pred_df, _ = predict(df)
     except FileNotFoundError:
-        msg.error('Model is trained yet. Please train model first.',
-                  icon='🤖')
+        msg.error('Model is not trained yet. Please train model first.', icon='🤖')
         st.stop()
     else:
         st.balloons()

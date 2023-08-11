@@ -1,13 +1,17 @@
 from pathlib import Path
 from typing import Any
+from warnings import warn
 
 import pandas as pd
 from sklearn.metrics import accuracy_score
 
 from src.core import CustomException, get_logger, io
-from src.entity.artifact import (DataIngestionArtifact,
-                                 DataTransformationArtifact,
-                                 ModelEvaluationArtifact, ModelTrainerArtifact)
+from src.entity.artifact import (
+    DataIngestionArtifact,
+    DataTransformationArtifact,
+    ModelEvaluationArtifact,
+    ModelTrainerArtifact,
+)
 from src.entity.config import ModelEvaluationConfig
 from src.entity.saved_model import SavedModelConfig
 
@@ -24,7 +28,10 @@ class ModelEvaluation(ModelEvaluationConfig):
     ) -> None:
         super().__init__()
         logger.critical(
-            '%s %s %s', '>>>'*10, self.__class__.__name__, '<<<'*10,
+            '%s %s %s',
+            '>>>' * 10,
+            self.__class__.__name__,
+            '<<<' * 10,
         )
 
         self.ingestion_artifact = ingestion_artifact
@@ -34,7 +41,9 @@ class ModelEvaluation(ModelEvaluationConfig):
         self.saved_models = SavedModelConfig()
 
     def __load_saved_objects(
-        self, model_fp, transformer_fp,
+        self,
+        model_fp,
+        transformer_fp,
     ) -> tuple[Any, Any]:
         model = io.load_model(model_fp)
         transformer = io.load_model(transformer_fp)
@@ -66,10 +75,7 @@ class ModelEvaluation(ModelEvaluationConfig):
 
     def initiate(self) -> ModelEvaluationArtifact:
         if self.saved_models.latest_saved_dir is None:
-            logger.info(
-                'There are no Pre-Trained model. '
-                'So this is the first trained model.'
-            )
+            logger.info('There are no Pre-Trained model. ' 'So this is the first trained model.')
             self.__dump_models_into_saved_models_dir()
             return ModelEvaluationArtifact(True, 0.0)
 
@@ -77,8 +83,7 @@ class ModelEvaluation(ModelEvaluationConfig):
 
         logger.info('Importing saved trained objects.')
         model, transformer = self.__load_saved_objects(
-            self.saved_models.path_to_save_model,
-            self.saved_models.path_to_save_transformer,
+            *self.saved_models.get_saved_models_path()[:2],
         )
 
         logger.info('Newly trained model objects')
@@ -88,38 +93,35 @@ class ModelEvaluation(ModelEvaluationConfig):
         )
 
         # --- --- Old Model Evaluation --- --- #
-        logger.info('%s Old Model Evaluation %s', '==='*10, '==='*10)
+        logger.info('%s Old Model Evaluation %s', '===' * 10, '===' * 10)
         test_df = pd.read_csv(self.ingestion_artifact.test_path)
         y_true = test_df[self.schema.target_name]
 
-        input_arr = transformer.transform(
-            test_df[transformer.get_feature_names_out()]
-        )
+        input_arr = transformer.transform(test_df[transformer.feature_names_in_])
         y_pred = model.predict(input_arr)
 
         old_score = accuracy_score(y_true, y_pred)
         logger.info('Score of old model: %s', old_score)
 
         # --- --- New Model Evaluation --- --- #
-        logger.info('%s New Model Evaluation %s', '==='*10, '==='*10)
-        input_arr = new_transformer.transform(
-            test_df[transformer.get_feature_names_out()]
-        )
+        logger.info('%s New Model Evaluation %s', '===' * 10, '===' * 10)
+        input_arr = new_transformer.transform(test_df[transformer.feature_names_in_])
         y_pred = new_model.predict(input_arr)
 
         current_score = accuracy_score(y_true, y_pred)
         logger.info('Score of current model: %s', current_score)
 
+        is_model_accepted = True
         if current_score <= old_score:
             msg = 'New trained model is not better than old model.'
-            logger.error(msg)
-            raise ValueError(msg)
+            logger.warning(msg)
+            warn(msg, UserWarning)
 
-        logger.info(
-            'New model is better than old model. So save the new model.'
-        )
+            is_model_accepted = False
+
+        logger.info('New model is better than old model. So save the new model.')
         self.__dump_models_into_saved_models_dir()
         return ModelEvaluationArtifact(
-            True,
-            current_score-old_score,    # type: ignore
+            is_model_accepted,
+            current_score - old_score,  # type: ignore
         )
