@@ -12,9 +12,7 @@ logger = get_logger(__name__)
 class ModelTrainer(ModelTrainerConfig):
     def __init__(self):
         super().__init__()
-        logger.critical(
-            '%s %s %s', '>>>'*10, self.__class__.__name__, '<<<'*10,
-        )
+        logger.critical('%s %s %s', '>>>' * 10, self.__class__.__name__, '<<<' * 10)
         self.transformation = DataTransformationConfig()
 
     def _get_train_test_data(self):
@@ -45,9 +43,8 @@ class ModelTrainer(ModelTrainerConfig):
         return train_score, test_score
 
     def _check_model_fitting(self, train_score, test_score):
-        logger.info(f'Checking if our model is under-fit or not.')
-        if (test_score < self.expected_testing_score or
-                train_score < self.expected_training_score):
+        logger.info('Checking if our model is under-fit or not.')
+        if test_score < self.expected_testing_score or train_score < self.expected_training_score:
             msg = (
                 f'Expected training score: {self.expected_training_score} \n'
                 f'Actual training score: {test_score} \n'
@@ -61,7 +58,7 @@ class ModelTrainer(ModelTrainerConfig):
 
         # --- --- --- --- --- --- --- --- --- --- --- --- --- --- #
 
-        logger.info(f'Checking if our model is over-fit or not.')
+        logger.info('Checking if our model is over-fit or not.')
         diff = abs(train_score - test_score)
         logger.info('Train-Test score diff: %s', diff)
         if diff > self.overfitting_threshold:
@@ -80,13 +77,13 @@ class ModelTrainer(ModelTrainerConfig):
         logger.info('Train the model')
         model = self._model(X_train, y_train)
 
-        train_score, test_score = self._evaluate(
-            model, X_train, X_test, y_train, y_test
-        )
+        train_score, test_score = self._evaluate(model, X_train, X_test, y_train, y_test)
         self._check_model_fitting(train_score, test_score)
 
         io.dump_model(model, self.model_path)
 
         return ModelTrainerArtifact(
-            self.model_path, train_score, test_score,    # type: ignore
+            self.model_path,
+            train_score,  # type: ignore
+            test_score,  # type: ignore
         )

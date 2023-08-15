@@ -6,6 +6,7 @@ import pandas as pd
 from sklearn.metrics import accuracy_score
 
 from src.core import CustomException, get_logger, io
+from src.database.schema import DataSchema
 from src.entity.artifact import (
     DataIngestionArtifact,
     DataTransformationArtifact,
@@ -27,15 +28,10 @@ class ModelEvaluation(ModelEvaluationConfig):
         trainer_artifact: ModelTrainerArtifact,
     ) -> None:
         super().__init__()
-        logger.critical(
-            '%s %s %s',
-            '>>>' * 10,
-            self.__class__.__name__,
-            '<<<' * 10,
-        )
+        logger.critical('%s %s %s', '>>>' * 10, self.__class__.__name__, '<<<' * 10)
 
         self.ingestion_artifact = ingestion_artifact
-        self.schema = ingestion_artifact.data_schema
+        self.schema = DataSchema()
         self.transformer_artifact = transformation_artifact
         self.trainer_artifact = trainer_artifact
         self.saved_models = SavedModelConfig()

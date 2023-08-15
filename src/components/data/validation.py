@@ -6,6 +6,7 @@ from pandas import DataFrame
 from scipy.stats import ks_2samp
 
 from src.core import CustomException, get_logger
+from src.database.schema import DataSchema
 from src.entity.artifact import DataIngestionArtifact, DataValidationArtifact
 from src.entity.config import DataValidationConfig
 
@@ -19,15 +20,15 @@ class DataValidation(DataValidationConfig):
         Initiate validation process between base, train and test dataset.
         """
         super().__init__()
-        logger.critical(
-            '%s %s %s', '>>>'*10, self.__class__.__name__, '<<<'*10,
-        )
+        logger.critical('%s %s %s', '>>>' * 10, self.__class__.__name__, '<<<' * 10)
         self.ingestion_artifact = ingestion_artifact
-        self.schema = ingestion_artifact.data_schema
+        self.schema = DataSchema()
         self.validation_report = {}
 
     def _drop_missing_values_cols(
-        self, df: DataFrame, dataset_type: str,
+        self,
+        df: DataFrame,
+        dataset_type: str,
     ) -> DataFrame | None:
         """
         This function will drop column which contains missing value more than specified threshold.
@@ -46,22 +47,20 @@ class DataValidation(DataValidationConfig):
         self.validation_report[report_name] = drop_cols
 
         if df.shape[1] == 0:
-            logger.info(
-                'Dropping %s columns from %s.', drop_cols, dataset_type,
-            )
+            logger.info('Dropping %s columns from %s.', drop_cols, dataset_type)
             return None
 
         return df
 
     def _is_required_cols_exists(
-        self, curr_df: DataFrame, dataset_type: str,
+        self,
+        curr_df: DataFrame,
+        dataset_type: str,
     ) -> bool:
         report_name = 'missing_cols_within_' + dataset_type
 
         missing_cols = list(set(self.schema.all_cols) - set(curr_df.columns))
-        logger.info(
-            'Column: %s is not available in %s.', missing_cols, dataset_type,
-        )
+        logger.info('Column: %s is not available in %s.', missing_cols, dataset_type)
 
         if len(missing_cols) > 0:
             msg = f'Columns are missing from {dataset_type}: {missing_cols}'
@@ -72,7 +71,10 @@ class DataValidation(DataValidationConfig):
         return True
 
     def _data_drift(
-        self, base_df: DataFrame, curr_df: DataFrame, dataset_type: str,
+        self,
+        base_df: DataFrame,
+        curr_df: DataFrame,
+        dataset_type: str,
     ) -> None:
         report_name = 'data_drift_within_' + dataset_type
         drift_report = {}
@@ -80,28 +82,23 @@ class DataValidation(DataValidationConfig):
             try:
                 base_data = base_df[base_col]
             except KeyError:
-                msg = (f'"{base_col}" is not a column in {dataset_type}. '
-                       f'Maybe "{base_col}" is a new column in schema.')
+                msg = (
+                    f'"{base_col}" is not a column in {dataset_type}. '
+                    f'Maybe "{base_col}" is a new column in schema.'
+                )
                 logger.error(msg)
                 warn(msg, FutureWarning)
                 continue
             curr_data = curr_df[base_col]
 
-            logger.info(
-                'Hypothesis "%s": %s, %s', base_col,
-                base_data.dtype, curr_data.dtype,
-            )
+            logger.info('Hypothesis "%s": %s, %s', base_col, base_data.dtype, curr_data.dtype)
             distribution = ks_2samp(base_data, curr_data)
-            pvalue = float(distribution.pvalue)    # type: ignore
+            pvalue = float(distribution.pvalue)  # type: ignore
 
             if pvalue > 0.05:
-                drift_report[base_col] = {
-                    'pvalue': round(pvalue, 3), 'same_distribution': True,
-                }
+                drift_report[base_col] = {'pvalue': round(pvalue, 3), 'same_distribution': True}
             else:
-                drift_report[base_col] = {
-                    'pvalue': round(pvalue, 3), 'same_distribution': False,
-                }
+                drift_report[base_col] = {'pvalue': round(pvalue, 3), 'same_distribution': False}
         self.validation_report[report_name] = drift_report
 
     def initiate(self) -> DataValidationArtifact:
@@ -132,25 +129,21 @@ class DataValidation(DataValidationConfig):
         drift_log_msg = 'All columns are available in %s. Hence calculating data drift.'
 
         # --- --- Train Dataset --- --- #
-        train_df_cols_status = self._is_required_cols_exists(
-            train_df, 'train_df')
+        train_df_cols_status = self._is_required_cols_exists(train_df, 'train_df')
         if train_df_cols_status:
             logger.info(drift_log_msg % 'train_df')
             self._data_drift(base_df, train_df, 'train_df')
 
         # --- --- Test Dataset --- --- #
-        test_df_cols_status = self._is_required_cols_exists(
-            test_df, 'test_df')
+        test_df_cols_status = self._is_required_cols_exists(test_df, 'test_df')
         if test_df_cols_status:
             logger.info(drift_log_msg % 'test_df')
             self._data_drift(base_df, test_df, 'test_df')
 
-        json.dump(self.validation_report, open(self.drift_report_path, 'w'),
-                  indent=2)
+        json.dump(self.validation_report, open(self.drift_report_path, 'w'), indent=2)
 
         return DataValidationArtifact(
             self.base_data_path,
-            self.schema,
             self.train_path,
             self.test_path,
             self.drift_report_path,
