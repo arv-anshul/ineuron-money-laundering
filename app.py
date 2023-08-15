@@ -52,7 +52,11 @@ with st.spinner('Model is training...'):
     if st.button('Train Model', use_container_width=True):
         # if connection with MONGODB is not established then
         # data is fetched from `ingestion_data_path` argument.
-        start_model_training(Path('data/base_data.csv'))
+        try:
+            start_model_training()
+        except Exception:
+            msg.error("Reading data from 'data/base_data.csv'")
+            start_model_training(Path('data/base_data.csv'))
         st.balloons()
 
 # --- --- --- --- --- --- --- --- --- --- --- --- --- --- #
