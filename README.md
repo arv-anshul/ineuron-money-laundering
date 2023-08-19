@@ -9,9 +9,7 @@ Backorders occurs when a product is temporarily out of stock, and customers need
 
 ### Project demo video
 
-<video height="420" controls>
-  <source src="./assets/project-demo-video.mp4" type="video/mp4" alt="Project Demo Video">
-</video>
+https://github.com/arv-anshul/ineuron-money-laundering/assets/111767754/c2eb4daa-0738-4eef-9e23-1180a5adedec
 
 ### Usage
 
