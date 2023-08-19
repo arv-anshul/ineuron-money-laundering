@@ -7,6 +7,12 @@ Backorders occurs when a product is temporarily out of stock, and customers need
 
 ![screenshot](./assets/screenshots/1.png)
 
+### Project demo video
+
+<video height="420" controls>
+  <source src="./assets/project-demo-video.mp4" type="video/mp4" alt="Project Demo Video">
+</video>
+
 ### Usage
 
 1. Install required packages.
