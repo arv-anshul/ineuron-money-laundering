@@ -5,7 +5,7 @@ import pandas as pd
 from pandas import DataFrame
 from scipy.stats import ks_2samp
 
-from src.core import CustomException, get_logger
+from src.core import get_logger
 from src.database.schema import DataSchema
 from src.entity.artifact import DataIngestionArtifact, DataValidationArtifact
 from src.entity.config import DataValidationConfig
@@ -13,7 +13,6 @@ from src.entity.config import DataValidationConfig
 logger = get_logger(__name__)
 
 
-@CustomException.wrap_with_custom_exception(logger)
 class DataValidation(DataValidationConfig):
     def __init__(self, ingestion_artifact: DataIngestionArtifact):
         """

@@ -1,14 +1,13 @@
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import accuracy_score
 
-from src.core import CustomException, get_logger, io
+from src.core import get_logger, io
 from src.entity.artifact import ModelTrainerArtifact
 from src.entity.config import DataTransformationConfig, ModelTrainerConfig
 
 logger = get_logger(__name__)
 
 
-@CustomException.wrap_with_custom_exception(logger)
 class ModelTrainer(ModelTrainerConfig):
     def __init__(self):
         super().__init__()

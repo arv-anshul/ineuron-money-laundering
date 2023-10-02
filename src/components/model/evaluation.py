@@ -5,7 +5,7 @@ from warnings import warn
 import pandas as pd
 from sklearn.metrics import accuracy_score
 
-from src.core import CustomException, get_logger, io
+from src.core import get_logger, io
 from src.database.schema import DataSchema
 from src.entity.artifact import (
     DataIngestionArtifact,
@@ -19,7 +19,6 @@ from src.entity.saved_model import SavedModelConfig
 logger = get_logger(__name__)
 
 
-@CustomException.wrap_with_custom_exception(logger)
 class ModelEvaluation(ModelEvaluationConfig):
     def __init__(
         self,

@@ -3,7 +3,6 @@ from pathlib import Path
 import pandas as pd
 from sklearn.model_selection import train_test_split
 
-from src.core.exception import CustomException
 from src.core.logger import get_logger
 from src.database import DataSchema, from_mongodb_to_dataframe
 from src.database.schema import SchemaColumnType
@@ -13,7 +12,6 @@ from src.entity.config import DataIngestionConfig
 logger = get_logger(__name__)
 
 
-@CustomException.wrap_with_custom_exception(logger)
 class DataIngestion(DataIngestionConfig):
     def __init__(self) -> None:
         super().__init__()

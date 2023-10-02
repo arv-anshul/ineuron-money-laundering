@@ -1,8 +1,7 @@
 import logging
 from dataclasses import dataclass
+from datetime import datetime
 from pathlib import Path
-
-from src.core import Config
 
 
 def get_logger(logger_name: str) -> logging.Logger:
@@ -29,10 +28,7 @@ class Logger:
         self.logger = logging.getLogger(self.logger_name)
         self.logger.setLevel(logging.DEBUG)
 
-        self.run_mode = Config.get_run_mode()
-        self.run_id = Config.get_run_id()
-
-        fp = Path(f'logs/{self.run_mode}_logs/{self.run_id}.log')
+        fp = Path(f"logs/{datetime.now():%m%m%y_%H%M}.log")
         fp.parent.mkdir(parents=True, exist_ok=True)
 
         formatter = logging.Formatter(
@@ -45,5 +41,5 @@ class Logger:
 
     @property
     def get_logger(self) -> logging.Logger:
-        """ Get the Logger object. """
+        """Get the Logger object."""
         return self.logger

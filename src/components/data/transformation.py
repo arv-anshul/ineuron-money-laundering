@@ -5,7 +5,6 @@ from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import LabelEncoder, OneHotEncoder, StandardScaler
 
 from src.core import get_logger, io
-from src.core.exception import CustomException
 from src.database.schema import DataSchema
 from src.entity.artifact import DataIngestionArtifact, DataTransformationArtifact
 from src.entity.config import DataTransformationConfig
@@ -13,26 +12,22 @@ from src.entity.config import DataTransformationConfig
 logger = get_logger(__name__)
 
 
-@CustomException.wrap_with_custom_exception(logger)
 class DataTransformation(DataTransformationConfig):
     def __init__(self, ingestion_artifact: DataIngestionArtifact):
         super().__init__()
-        logger.critical('%s %s %s', '>>>' * 10, self.__class__.__name__, '<<<' * 10)
+        logger.critical("%s %s %s", ">>>" * 10, self.__class__.__name__, "<<<" * 10)
         self.ingestion = ingestion_artifact
         self.schema = DataSchema()
 
     def get_transformer_object(self):
-        num_pipe = Pipeline([('scaler', StandardScaler())])
-
-        obj_pipe = Pipeline([('encoder', OneHotEncoder(drop='first'))])
-
+        num_pipe = Pipeline([("scaler", StandardScaler())])
+        obj_pipe = Pipeline([("encoder", OneHotEncoder(drop="first"))])
         preprocessor = ColumnTransformer(
             [
-                ('num_pipe', num_pipe, self.schema.num_cols),
-                ('obj_pipe', obj_pipe, self.schema.cat_cols),
+                ("num_pipe", num_pipe, self.schema.num_cols),
+                ("obj_pipe", obj_pipe, self.schema.cat_cols),
             ]
         )
-
         return preprocessor
 
     def initiate(self) -> DataTransformationArtifact:
