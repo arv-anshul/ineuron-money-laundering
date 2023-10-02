@@ -1,45 +1,37 @@
 import logging
-from dataclasses import dataclass
-from datetime import datetime
+from datetime import datetime as dt
 from pathlib import Path
+
+logger_instances = {}
+
+
+def __configure_logger(logger: logging.Logger, file_path: Path):
+    logger.setLevel(logging.DEBUG)
+
+    file_path.parent.mkdir(exist_ok=True)
+    file_handler = logging.FileHandler(file_path)
+    formatter = logging.Formatter(
+        "[%(asctime)s]:%(levelname)s:[%(lineno)d]:%(name)s - %(message)s"
+    )
+    file_handler.setFormatter(formatter)
+    logger.addHandler(file_handler)
 
 
 def get_logger(logger_name: str) -> logging.Logger:
     """
-    :logger_name (str): `__name__`
+    :param logger_name (str): __name__
 
     :returns: logging.Logger
     """
-    return Logger(logger_name).get_logger
+    # Check if the logger instance already exists
+    if logger_name in logger_instances:
+        return logger_instances[logger_name]
 
+    run_id = dt.now().strftime("%d%m%y-%H")
+    log_file_path = Path(f"logs/{run_id}.log")
 
-@dataclass
-class Logger:
-    """
-    Logger for the project.
+    logger = logging.getLogger(logger_name)
+    __configure_logger(logger, log_file_path)
+    logger_instances[logger_name] = logger
 
-    Args:
-        logger_name: __name__
-    """
-
-    logger_name: str
-
-    def __post_init__(self):
-        self.logger = logging.getLogger(self.logger_name)
-        self.logger.setLevel(logging.DEBUG)
-
-        fp = Path(f"logs/{datetime.now():%m%m%y_%H%M}.log")
-        fp.parent.mkdir(parents=True, exist_ok=True)
-
-        formatter = logging.Formatter(
-            "[ %(asctime)s ] %(filename)s:[%(lineno)d] - %(name)s - %(levelname)s - %(message)s"
-        )
-
-        file_handler = logging.FileHandler(fp)
-        file_handler.setFormatter(formatter)
-        self.logger.addHandler(file_handler)
-
-    @property
-    def get_logger(self) -> logging.Logger:
-        """Get the Logger object."""
-        return self.logger
+    return logger
