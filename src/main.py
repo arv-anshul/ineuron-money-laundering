@@ -3,10 +3,6 @@ from typing import Any
 
 import pandas as pd
 
-from src.core.config import Config  # isort:skip
-
-Config.set_run_mode('training')
-
 from src.components import data, model
 from src.core import io
 from src.entity.saved_model import SavedModelConfig

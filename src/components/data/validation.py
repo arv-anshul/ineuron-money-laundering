@@ -103,7 +103,9 @@ class DataValidation(DataValidationConfig):
     def initiate(self) -> DataValidationArtifact:
         # --- --- Base Dataset --- --- #
         logger.info('Reading base dataset.')
-        base_df = pd.read_csv(self.base_data_path)
+        if self.ingestion_artifact.base_data_path is None:
+            raise ValueError('base_data_path must not None.')
+        base_df = pd.read_csv(self.ingestion_artifact.base_data_path)
         base_df = self._drop_missing_values_cols(base_df, 'base_df')
 
         # --- --- Train dataset --- --- #
@@ -142,7 +144,7 @@ class DataValidation(DataValidationConfig):
         json.dump(self.validation_report, open(self.drift_report_path, 'w'), indent=2)
 
         return DataValidationArtifact(
-            self.base_data_path,
+            self.ingestion_artifact.base_data_path,
             self.train_path,
             self.test_path,
             self.drift_report_path,

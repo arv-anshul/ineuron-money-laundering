@@ -27,7 +27,7 @@ def get_logger(logger_name: str) -> logging.Logger:
     if logger_name in logger_instances:
         return logger_instances[logger_name]
 
-    run_id = dt.now().strftime("%d%m%y-%H")
+    run_id = dt.now().strftime("%d%m%y-%H%M")
     log_file_path = Path(f"logs/{run_id}.log")
 
     logger = logging.getLogger(logger_name)

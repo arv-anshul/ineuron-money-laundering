@@ -6,7 +6,7 @@ from pathlib import Path
 
 @dataclass
 class DataIngestionArtifact:
-    base_data_path: Path
+    base_data_path: Path | None
     train_path: Path
     test_path: Path
 

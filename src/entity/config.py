@@ -1,16 +1,12 @@
 from dataclasses import dataclass
+from datetime import datetime
 from pathlib import Path
-
-from src.core import Config
-from src.core.constants import BASE_DATA_NAME
-
-run_id = Config.get_run_id()
 
 
 class PipelineConfig:
     def __init__(self):
         self.root = Path.cwd()
-        self.artifact_dir = Path('artifacts', run_id)
+        self.artifact_dir = Path('artifacts', datetime.now().strftime('%d%m%y_%H%M'))
         self.__create_all_dirs()
 
     def __create_all_dirs(self):
@@ -20,7 +16,6 @@ class PipelineConfig:
 class DataIngestionConfig(PipelineConfig):
     def __init__(self):
         super().__init__()
-        self.base_data_path = self.root / 'data' / BASE_DATA_NAME
         self.dir = self.artifact_dir / 'data_ingestion'
         self.train_path = self.dir / 'train.csv'
         self.test_path = self.dir / 'test.csv'

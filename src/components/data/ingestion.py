@@ -52,12 +52,11 @@ class DataIngestion(DataIngestionConfig):
                 df = from_mongodb_to_dataframe()
             except Exception:
                 logger.error('Error while importing data from database.')
-                if ingestion_data_path is None:
-                    logger.error(
-                        'Please provide either "ingestion_data_path" or '
-                        '"MONGODB_URL" to establish database connection.'
-                    )
-                    raise
+                logger.error(
+                    'Please provide either "ingestion_data_path" or '
+                    '"MONGODB_URL" to establish database connection.'
+                )
+                raise
         else:
             logger.info('Reading "ingestion_data_path" parameter.')
             df = pd.read_csv(ingestion_data_path)
@@ -75,7 +74,7 @@ class DataIngestion(DataIngestionConfig):
         test_df.to_csv(self.test_path, index=False)
 
         return DataIngestionArtifact(
-            self.base_data_path,
+            ingestion_data_path,
             self.train_path,
             self.test_path,
         )
