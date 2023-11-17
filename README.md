@@ -1,5 +1,7 @@
 # Money Laundering Prevention System
 
+**🔗 Deployed Website on Streamlit Cloud Link** [![Streamlit Badge](https://img.shields.io/badge/Streamlit-FF4B4B?logo=streamlit&logoColor=fff)](https://ineuron-money-laundering-1a.streamlit.app/)
+
 This project aims to predict the likelihood of backorders for products in a supply chain using machine learning techniques.  
 Backorders occurs when a product is temporarily out of stock, and customers need to wait for it to become available again. By predicting potential backorders of a product, businesses can proactively manage their inventory and improve customer satisfaction.
 
